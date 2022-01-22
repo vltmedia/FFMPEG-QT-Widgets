@@ -1,6 +1,7 @@
 import json
 import sys
 import os
+import qtawesome as qta
 
 from PySide2.QtWidgets import QApplication, QWidget, QMainWindow, QAction, QHeaderView, QFileDialog, QStackedWidget, \
     QListView, QMessageBox, QLabel, QGraphicsScene, QStyle
@@ -44,17 +45,15 @@ class SettingsInputField(QWidget):
         self.ui.pushButton_SavePreset.setText("")
         self.ui.pushButton_SetFilePath.setText("")
         self.ui.pushButton_SetFilePath_Save.setText("")
-        pixmapiOpen = getattr(QStyle, "SP_DialogOpenButton")
-        iconOpen = self.style().standardIcon(pixmapiOpen)
-        self.ui.pushButton_LoadPreset.setIcon(iconOpen)
-        self.ui.pushButton_SetFilePath.setIcon(iconOpen)
-        pixmapiSave = getattr(QStyle, "SP_DialogSaveButton")
-        iconSave = self.style().standardIcon(pixmapiSave)
-        self.ui.pushButton_SavePreset.setIcon(iconSave)
-        self.ui.pushButton_SetFilePath_Save.setIcon(iconSave)
-        pixmapiWindow = getattr(QStyle, "SP_FileDialogContentsView")
-        iconWindow = self.style().standardIcon(pixmapiWindow)
-        self.setWindowIcon(iconWindow)
+        pixmapiOpen = qta.icon('fa5s.folder-open')
+        self.ui.pushButton_LoadPreset.setIcon(pixmapiOpen)
+        self.ui.pushButton_SetFilePath.setIcon(pixmapiOpen)
+        pixmapiSave = qta.icon('fa5s.save')
+        self.ui.pushButton_SavePreset.setIcon(pixmapiSave)
+        self.ui.pushButton_SetFilePath_Save.setIcon(pixmapiSave)
+
+        cogs = qta.icon('fa5s.cogs')
+        self.setWindowIcon(cogs)
 
 
     def PopulateCodecs(self):

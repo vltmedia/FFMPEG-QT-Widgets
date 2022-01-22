@@ -16,6 +16,6 @@ if __name__ == "__main__":
     sys.exit(app.exec_())
 ```
 
-![Vid1](https://github.com/vltmedia/FFMPEG-QT-Widgets/blob/master\images\screenshots\FFMPEGQTW_Video.png?raw=true)
-![Vid2](https://github.com/vltmedia/FFMPEG-QT-Widgets/blob/master\images\screenshots\FFMPEGQTW_Video2.png?raw=true)
-![Audio](https://github.com/vltmedia/FFMPEG-QT-Widgets/blob/master\images\screenshots\FFMPEGQTW_Audio.png?raw=true)
+![Vid1](https://raw.githubusercontent.com/vltmedia/FFMPEG-QT-Widgets/master\images\screenshots\FFMPEGQTW_Video.png)
+![Vid2](https://raw.githubusercontent.com/vltmedia/FFMPEG-QT-Widgets/master\images\screenshots\FFMPEGQTW_Video2.png)
+![Audio](https://raw.githubusercontent.com/vltmedia/FFMPEG-QT-Widgets/master/images/screenshots/FFMPEGQTW_Audio.png)

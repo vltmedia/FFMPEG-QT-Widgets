@@ -12,15 +12,21 @@ from Qt import QtCore, QtGui, QtWidgets
 from shutil import copyfile
 from PySide2.QtCore import Signal, QThread
 
-from SettingsInputField.SettingsInputField import Ui_Form
-from ffmpegData.GetFFMPEGCodecs import GetAudioCodecs, GetVideoCodecs, GetPixelFormats
+try:
+    from SettingsInputField.SettingsInputField import Ui_Form
+    from ffmpegData.GetFFMPEGCodecs import GetAudioCodecs, GetVideoCodecs, GetPixelFormats
+except:
+    from .SettingsInputField import Ui_Form
+    from ..ffmpegData.GetFFMPEGCodecs import GetAudioCodecs, GetVideoCodecs, GetPixelFormats
 
 
 class SettingsInputField(QWidget):
-    cameraCount = Signal(int)
 
-    def __init__(self, parent=None, context=None, ):
+    def __init__(self, parent=None, context=None, *argv, **kwargs):
         super(SettingsInputField, self).__init__()
+        self.parent = parent
+        self.argv = argv
+        self.kwargs = kwargs
         self.CurrentPreset = None
         self.codec = None
         self.dirName = os.path.dirname(__file__)
@@ -29,16 +35,21 @@ class SettingsInputField(QWidget):
         self.ui.setupUi(self)
         self.setWindowTitle("Settings")
 
-
         self.loaded = True
         self.ui.codecComboBox.currentTextChanged.connect(self.CodecChanged)
         self.ui.pushButton_SavePreset.clicked.connect(self.SavePresetClicked)
         self.ui.pushButton_LoadPreset.clicked.connect(self.LoadPresetClicked)
         self.ui.pushButton_SetFilePath.clicked.connect(self.LoadFileClicked)
         self.ui.pushButton_SetFilePath_Save.clicked.connect(self.LoadOutputFileClicked)
+        self.ui.pushButton_Apply.clicked.connect(self.ApplyClicked)
+        self.ui.pushButton_Close.clicked.connect(self.CloseClicked)
         self.SetIcons()
         self.PopulateCodecs()
         self.ApplyPreset()
+        self.LoadFromKwargs()
+
+    Apply = Signal(dict)
+    Closing = Signal()
 
     def SetIcons(self):
         self.ui.pushButton_LoadPreset.setText("")
@@ -54,7 +65,6 @@ class SettingsInputField(QWidget):
 
         cogs = qta.icon('fa5s.cogs')
         self.setWindowIcon(cogs)
-
 
     def PopulateCodecs(self):
         self.ui.codecComboBox.addItems(GetVideoCodecs())
@@ -86,8 +96,8 @@ class SettingsInputField(QWidget):
         self.ui.pixelFormatComboBox.setCurrentIndex(indexPixelFormat)
         self.ui.encoderComboBox.setCurrentIndex(indexAudioEncoder)
         self.ui.comboBoxSampleRate.setCurrentIndex(indexSampleRate)
-        self.ui.videoBitrateSpinBox.value = int(videoBitrate)
-        self.ui.spinBoxBitrate.value = int(audioBitrate)
+        self.ui.videoBitrateSpinBox.setValue(int(videoBitrate))
+        self.ui.spinBoxBitrate.setValue(int(audioBitrate))
         if 'prores' in codecName:
             self.PopulateProfiles()
             indexProfile = self.GetMatchingIndex(self.ui.profileComboBox, profile)
@@ -111,6 +121,21 @@ class SettingsInputField(QWidget):
             "ExportAudio": str(self.ui.exportAudioCheckBox.isChecked()),
         }
         return outjs
+
+    def LoadFromKwargs(self):
+        self.ui.filePathLineEdit.setText(self.kwargs['FilePath'])
+        if self.kwargs['Preset'] != None:
+            self.CurrentPreset = self.kwargs['Preset']
+            self.ApplyPreset(
+                             videoBitrate=self.kwargs['VideoBitRate'])
+
+        # self.ui.qualitySpinBox.setValue(int(PresetDict['Quality']))
+
+        # self.ui.dimensions_X.setValue(int(PresetDict['Width']))
+        # self.ui.dimensions_Y.setValue(int(PresetDict['Height']))
+        # self.ui.optionsLineEdit.setText(PresetDict['Options'])
+
+
 
     def LoadPreset(self, PresetDict):
         self.CurrentPreset = PresetDict
@@ -167,3 +192,12 @@ class SettingsInputField(QWidget):
                 return count
             count += 1
         return -1
+
+    def ApplyClicked(self):
+        self.Apply.emit(self.GetAsPreset())
+        self.close()
+
+
+    def CloseClicked(self):
+        self.Closing.emit()
+        self.close()

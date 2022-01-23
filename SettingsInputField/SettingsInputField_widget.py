@@ -45,8 +45,8 @@ class SettingsInputField(QWidget):
         self.ui.pushButton_Close.clicked.connect(self.CloseClicked)
         self.SetIcons()
         self.PopulateCodecs()
-        self.ApplyPreset()
         self.LoadFromKwargs()
+        # self.ApplyPreset()
 
     Apply = Signal(dict)
     Closing = Signal()
@@ -96,7 +96,8 @@ class SettingsInputField(QWidget):
         self.ui.pixelFormatComboBox.setCurrentIndex(indexPixelFormat)
         self.ui.encoderComboBox.setCurrentIndex(indexAudioEncoder)
         self.ui.comboBoxSampleRate.setCurrentIndex(indexSampleRate)
-        self.ui.videoBitrateSpinBox.setValue(int(videoBitrate))
+        videoBitrate_ = int(videoBitrate)
+        self.ui.videoBitrateSpinBox.setValue(videoBitrate_)
         self.ui.spinBoxBitrate.setValue(int(audioBitrate))
         if 'prores' in codecName:
             self.PopulateProfiles()
@@ -110,8 +111,8 @@ class SettingsInputField(QWidget):
             "PixelFormat": self.ui.pixelFormatComboBox.currentText(),
             "AudioEncoder": self.ui.encoderComboBox.currentText(),
             "AudioSampleRate": self.ui.comboBoxSampleRate.currentText(),
-            "VideoBitRate": float(self.ui.videoBitrateSpinBox.value),
-            "AudioBitRate": float(self.ui.spinBoxBitrate.value),
+            "VideoBitRate": float(self.ui.videoBitrateSpinBox.value()),
+            "AudioBitRate": float(self.ui.spinBoxBitrate.value()),
             "VideoProfile": self.ui.profileComboBox.currentText(),
             "Quality": float(self.ui.qualitySpinBox.value()),
             "Width": int(self.ui.dimensions_X.value()),
@@ -126,8 +127,12 @@ class SettingsInputField(QWidget):
         self.ui.filePathLineEdit.setText(self.kwargs['FilePath'])
         if self.kwargs['Preset'] != None:
             self.CurrentPreset = self.kwargs['Preset']
-            self.ApplyPreset(
-                             videoBitrate=self.kwargs['VideoBitRate'])
+            self.ApplyPreset(codecName=self.CurrentPreset['Codec'], pixelFormatName=self.CurrentPreset['PixelFormat'],
+                         audioEncoder=self.CurrentPreset['AudioEncoder'],
+                         videoBitrate=self.kwargs['VideoBitRate'], audioBitrate=self.CurrentPreset['AudioBitRate'],
+                         sampleRate=self.CurrentPreset['AudioSampleRate'],
+                         profile=self.CurrentPreset['VideoProfile']
+                             )
 
         # self.ui.qualitySpinBox.setValue(int(PresetDict['Quality']))
 
